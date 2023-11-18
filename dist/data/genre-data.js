@@ -90,36 +90,36 @@ const data = [
         code: "adult",
     },
     {
-        name:"Phim Bộ",
-        code:"@series",
+        name: "Phim Bộ",
+        code: "@series",
     },
     {
-        name:"Phim Lẻ",
-        code:"@single",
+        name: "Phim Lẻ",
+        code: "@single",
     },
     {
-        name:"Phim Hoạt Hình",
-        code:"@hoathinh",
+        name: "Phim Hoạt Hình",
+        code: "@hoathinh",
     },
     {
-        name:"TV Show",
-        code:"@tvshows",
+        name: "TV Show",
+        code: "@tvshows",
     },
     {
-        name:"Phim VietSub",
-        code:"@series",
+        name: "Phim VietSub",
+        code: "@series",
     },
     {
-        name:"Phim Thuyết Minh",
-        code:"@series",
+        name: "Phim Thuyết Minh",
+        code: "@series",
     },
     {
-        name:"Phim Bộ Đang Chiếu",
-        code:"@series",
+        name: "Phim Bộ Đang Chiếu",
+        code: "@series",
     },
     {
-        name:"Phim Bộ Đã Hoàn Thành",
-        code:"@series",
+        name: "Phim Bộ Đã Hoàn Thành",
+        code: "@series",
     }
 ];
 exports.default = data;

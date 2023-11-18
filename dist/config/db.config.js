@@ -5,7 +5,7 @@ const connection = new sequelize_1.Sequelize({
     host: "localhost",
     dialect: "mysql",
     username: "root",
-    password: "",
+    password: "16042001",
     database: "real_film",
     logging: false,
 });

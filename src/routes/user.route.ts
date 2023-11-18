@@ -22,4 +22,10 @@ router.put(
 
 router.get("/profile", authenticateToken, UserController.getProfile);
 
+// Thêm endpoint để yêu cầu đặt lại mật khẩu
+router.post("/forgot-password", UserController.forgotPassword);
+
+// Thêm endpoint để xử lý đặt lại mật khẩu
+router.post("/reset-password/:token", UserController.resetPassword);
+
 export default router;

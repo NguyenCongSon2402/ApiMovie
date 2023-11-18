@@ -6,6 +6,9 @@ import { generateToken } from "../middleware";
 import { UserModel } from "../models";
 import { LoginBody, SignupBody, UpdateUserBody } from "../schema";
 import { sendResponse } from "../utils";
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET_KEY, DOMAIN } from '../utils';
+import sendEmail from "../utils/send-mail";
 
 const signUp: RequestHandler<
   unknown,
@@ -164,11 +167,126 @@ const getProfile: RequestHandler<
   } catch (error) {}
 };
 
+const forgotPassword: RequestHandler<
+  unknown,
+  ResponseResult<unknown>,
+  { email: string, template: string },
+  unknown
+> = async (req, res) => {
+  try {
+    const { email, template } = req.body;
+    if (!email) {
+      return sendResponse(res, {
+        code: 400,
+        status: "Error",
+        message: "Email bắt buộc phải nhập.",
+      });
+    }
+    const user = await UserModel.findOne({ where: { email: email } });
+
+    if (!user) {
+      return sendResponse(res, {
+        code: 400,
+        status: "Error",
+        message: "Email không tồn tại!.",
+      });
+    }
+
+    // Tạo token có thời gian hết hạn
+    const accessToken = generateToken(user);
+    // Thực hiện gửi email
+
+    const resetPasswordUrl = `${DOMAIN}/reset-password?token=${accessToken}`;
+    let emailContent = `<a hreft='${resetPasswordUrl}'>Reset password</a>`
+    if (template) {
+      emailContent = template.replace('{{urlResetPassword}}', resetPasswordUrl);
+    }
+    sendEmail(email, 'Reset password', '', emailContent)
+      .then(() => {
+        return sendResponse(res, {
+          code: 200,
+          status: "Success",
+          message: "Email đặt lại mật khẩu đã được gửi.",
+          accessToken: accessToken
+        });
+      })
+      .catch((error) => {
+        return sendResponse(res, {
+          code: 500,
+          status: 'Error',
+          message: 'Gửi email thất bại',
+        });
+      });
+  } catch (error) {
+    return sendResponse(res, {
+      code: 500,
+      status: 'Error',
+      message: error,
+    });
+  }
+};
+
+const resetPassword: RequestHandler<
+  { token: string },
+  ResponseResult<unknown>,
+  { password: string },
+  unknown
+> = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+    if (!password) {
+      return sendResponse(res, {
+        code: 400,
+        status: 'Error',
+        message: 'Password không hợp lệ.',
+      });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET_KEY) as jwt.JwtPayload;
+    if (!decoded || !decoded.id) {
+      return sendResponse(res, {
+        code: 400,
+        status: 'Error',
+        message: 'Token không hợp lệ hoặc đã hết hạn.',
+      });
+    }
+
+    const user = await UserModel.findOne({ where: { id: decoded.id } });
+
+    if (!user) {
+      return res.status(200).json({
+        code: 400,
+        status: "Error",
+        message: "Người dùng không tồn tại.",
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password as string, 10);
+    user.update({
+      password: hashedPassword,
+    });
+
+    return sendResponse(res, {
+      code: 200,
+      status: 'Success',
+      message: 'Mật khẩu đã được đặt lại thành công.',
+    });
+  } catch (error) {
+    return sendResponse(res, {
+      code: 500,
+      status: 'Error',
+      message: error,
+    });
+  }
+};
+
+
 const UserController = {
   signUp,
   login,
   updateProfile,
   getProfile,
+  forgotPassword,
+  resetPassword
 };
 
 export default UserController;

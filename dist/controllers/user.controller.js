@@ -17,6 +17,8 @@ const lodash_1 = __importDefault(require("lodash"));
 const middleware_1 = require("../middleware");
 const models_1 = require("../models");
 const utils_1 = require("../utils");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const utils_2 = require("../utils");
 const signUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, email, birthday, password } = req.body;
@@ -136,10 +138,95 @@ const getProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (error) { }
 });
+const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return (0, utils_1.sendResponse)(res, {
+                code: 400,
+                status: "Error",
+                message: "Email bắt buộc phải nhập.",
+            });
+        }
+        const user = yield models_1.UserModel.findOne({ where: { email: email } });
+        if (!user) {
+            return (0, utils_1.sendResponse)(res, {
+                code: 400,
+                status: "Error",
+                message: "Email không tồn tại!.",
+            });
+        }
+        // Tạo token có thời gian hết hạn
+        const accessToken = (0, middleware_1.generateToken)(user);
+        // Thực hiện gửi email
+        // Gửi email với link đặt lại mật khẩu
+        // await sendResetPasswordEmail(email, accessToken);
+        return (0, utils_1.sendResponse)(res, {
+            code: 200,
+            status: "Success",
+            message: "Email đặt lại mật khẩu đã được gửi.",
+            accessToken: accessToken
+        });
+    }
+    catch (error) {
+        return (0, utils_1.sendResponse)(res, {
+            code: 500,
+            status: 'Error',
+            message: error,
+        });
+    }
+});
+const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+        if (!password) {
+            return (0, utils_1.sendResponse)(res, {
+                code: 400,
+                status: 'Error',
+                message: 'Password không hợp lệ.',
+            });
+        }
+        const decoded = jsonwebtoken_1.default.verify(token, utils_2.JWT_SECRET_KEY);
+        if (!decoded || !decoded.id) {
+            return (0, utils_1.sendResponse)(res, {
+                code: 400,
+                status: 'Error',
+                message: 'Token không hợp lệ hoặc đã hết hạn.',
+            });
+        }
+        const user = yield models_1.UserModel.findOne({ where: { id: decoded.id } });
+        if (!user) {
+            return res.status(200).json({
+                code: 400,
+                status: "Error",
+                message: "Người dùng không tồn tại.",
+            });
+        }
+        const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
+        user.update({
+            password: hashedPassword,
+        });
+        return (0, utils_1.sendResponse)(res, {
+            code: 200,
+            status: 'Success',
+            message: 'Mật khẩu đã được đặt lại thành công.',
+        });
+    }
+    catch (error) {
+        return (0, utils_1.sendResponse)(res, {
+            code: 500,
+            status: 'Error',
+            message: error,
+        });
+    }
+});
 const UserController = {
     signUp,
     login,
     updateProfile,
     getProfile,
+    forgotPassword,
+    resetPassword
 };
 exports.default = UserController;

@@ -10,3 +10,4 @@ export enum TABLE_NAME {
 }
 
 export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as string;
+export const DOMAIN = process.env.DOMAIN as string;
