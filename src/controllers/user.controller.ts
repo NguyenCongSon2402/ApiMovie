@@ -106,7 +106,7 @@ const updateProfile: RequestHandler<
   unknown
 > = async (req, res) => {
   try {
-    const { name, birthday, photoURL } = req.body;
+    const { name, birthday, photoURL, coins } = req.body;
     const userId = req.user?.id;
 
     if (!userId) {
@@ -131,6 +131,7 @@ const updateProfile: RequestHandler<
       name,
       birthday,
       photoURL,
+      coins,
     });
 
     return res.status(200).json({

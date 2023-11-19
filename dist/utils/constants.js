@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JWT_SECRET_KEY = exports.TABLE_NAME = void 0;
+exports.DOMAIN = exports.JWT_SECRET_KEY = exports.TABLE_NAME = void 0;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 var TABLE_NAME;
@@ -35,3 +35,4 @@ var TABLE_NAME;
     TABLE_NAME["RATINGS"] = "ratings";
 })(TABLE_NAME || (exports.TABLE_NAME = TABLE_NAME = {}));
 exports.JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+exports.DOMAIN = process.env.DOMAIN;

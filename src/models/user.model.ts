@@ -26,13 +26,18 @@ const UserModel = connection.define<User>(TABLE_NAME.USERS, {
     allowNull: false,
   },
   photoURL: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true,
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
     allowNull: true,
+  },
+  coins: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
   },
 });
 

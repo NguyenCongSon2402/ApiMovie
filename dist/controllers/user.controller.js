@@ -19,6 +19,7 @@ const models_1 = require("../models");
 const utils_1 = require("../utils");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const utils_2 = require("../utils");
+const send_mail_1 = __importDefault(require("../utils/send-mail"));
 const signUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, email, birthday, password } = req.body;
@@ -86,7 +87,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const { name, birthday, photoURL } = req.body;
+        const { name, birthday, photoURL, coins } = req.body;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         if (!userId) {
             return res.status(200).json({
@@ -107,6 +108,7 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             name,
             birthday,
             photoURL,
+            coins,
         });
         return res.status(200).json({
             code: 200,
@@ -140,7 +142,7 @@ const getProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { email } = req.body;
+        const { email, template } = req.body;
         if (!email) {
             return (0, utils_1.sendResponse)(res, {
                 code: 400,
@@ -159,13 +161,26 @@ const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
         // Tạo token có thời gian hết hạn
         const accessToken = (0, middleware_1.generateToken)(user);
         // Thực hiện gửi email
-        // Gửi email với link đặt lại mật khẩu
-        // await sendResetPasswordEmail(email, accessToken);
-        return (0, utils_1.sendResponse)(res, {
-            code: 200,
-            status: "Success",
-            message: "Email đặt lại mật khẩu đã được gửi.",
-            accessToken: accessToken
+        const resetPasswordUrl = `${utils_2.DOMAIN}/reset-password?token=${accessToken}`;
+        let emailContent = `<a hreft='${resetPasswordUrl}'>Reset password</a>`;
+        if (template) {
+            emailContent = template.replace('{{urlResetPassword}}', resetPasswordUrl);
+        }
+        (0, send_mail_1.default)(email, 'Reset password', '', emailContent)
+            .then(() => {
+            return (0, utils_1.sendResponse)(res, {
+                code: 200,
+                status: "Success",
+                message: "Email đặt lại mật khẩu đã được gửi.",
+                accessToken: accessToken
+            });
+        })
+            .catch((error) => {
+            return (0, utils_1.sendResponse)(res, {
+                code: 500,
+                status: 'Error',
+                message: 'Gửi email thất bại',
+            });
         });
     }
     catch (error) {

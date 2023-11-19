@@ -26,13 +26,18 @@ const UserModel = config_1.connection.define(utils_1.TABLE_NAME.USERS, {
         allowNull: false,
     },
     photoURL: {
-        type: sequelize_1.DataTypes.STRING,
+        type: sequelize_1.DataTypes.TEXT,
         allowNull: true,
     },
     isAdmin: {
         type: sequelize_1.DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: true,
+    },
+    coins: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
     },
 });
 exports.default = UserModel;

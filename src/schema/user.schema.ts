@@ -27,7 +27,8 @@ export const updateUserSchema = yup.object({
   body: yup.object({
     name: yup.string(),
     photoURL: yup.string(),
-    birthday: yup.string().required(),
+    birthday: yup.string(),
+    coins: yup.number(),
   }),
 });
 

@@ -8,10 +8,11 @@ import {
   RatingRoutes,
   UserRoutes,
 } from "./routes";
+import cors from "cors";
 
 const bodyParser = require("body-parser");
 const app: Express = express();
-const port = 3000;
+const port = 3100;
 
 const apiVersion = "1";
 const apiRoutes = `/api/v${apiVersion}`;
@@ -32,6 +33,8 @@ app.use(
     limit: "50mb",
   })
 );
+
+app.use(cors());
 
 app.get("/", (req: any, res: Response) => {
   res.send("Real Film!.");

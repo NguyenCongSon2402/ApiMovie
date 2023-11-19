@@ -16,4 +16,5 @@ export interface User
   password?: string;
   photoURL?: string;
   isAdmin?: boolean;
+  coins?: number;
 }

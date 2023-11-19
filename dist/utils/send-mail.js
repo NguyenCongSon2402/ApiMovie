@@ -13,29 +13,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const nodemailer_1 = __importDefault(require("nodemailer"));
-// Thiết lập thông tin người gửi - thay thế với thông tin của bạn
+const { EMAIL_URL, EMAIL_PASSWORD } = process.env;
 const transporter = nodemailer_1.default.createTransport({
     service: 'gmail',
     auth: {
-        user: 'your-email@gmail.com',
-        pass: 'your-password', // Thay thế bằng mật khẩu của bạn
+        user: EMAIL_URL,
+        pass: EMAIL_PASSWORD,
     },
 });
-// Hàm gửi email
-const sendEmail = (to, subject, text) => __awaiter(void 0, void 0, void 0, function* () {
+const sendEmail = (to, subject, text, html) => __awaiter(void 0, void 0, void 0, function* () {
     const mailOptions = {
-        from: 'your-email@gmail.com',
+        from: EMAIL_URL,
         to: to,
         subject: subject,
         text: text,
+        html: html,
     };
     try {
         const result = yield transporter.sendMail(mailOptions);
-        console.log('Email sent: ', result);
         return result;
     }
     catch (error) {
-        console.error('Error sending email: ', error);
         throw error;
     }
 });
