@@ -1,0 +1,11 @@
+đối với backend:
+  B1  Chạy lệnh: npx tsc 
+        => Để chuyển đổi code typescript thành javascript để các môi trường khác có thể tương tác được
+  B2 Sau đó: chạy lệnh: node ./dist/server.js để khởi chạy server.
+
+đồi với Android:
+   B1 Run android 
+   B2 Sau đó chạy lệnh adb reverse tcp:3000 tcp:3000  để Android có thể hiểu được URL của localhost port mình dùng 3000, nếu dùng port khác thì sửa.
+
+Đối với link up movies khi thực hiện chức năng thêm thì địa chỉ phải là 1 url lưu video hợp lệ, nếu không app sẽ crash.
+Link có thể lấy từ đây https://gist.github.com/jsturgis/3b19447b304616f18657, hoặc co the add vô chỗ luu trữ của firebase rồi getlink ra 
